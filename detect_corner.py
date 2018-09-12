@@ -1,7 +1,15 @@
 import cv2
 import numpy as np
+import os
+import datetime
 
 def detect_contour(path):
+
+    made_time = datetime.datetime.today().strftime("%Y-%m-%d-%H-%M-%S")#フォーマットの指定
+
+    save_directory_name = "./images/result"+"/" + str(made_time)
+    os.mkdir(save_directory_name)
+
 
     src = cv2.imread(path, cv2.IMREAD_COLOR)
 
@@ -14,7 +22,7 @@ def detect_contour(path):
     #cv2.CHAIN_APPROX_NONE:中間点も保持する
     #cv2.CHAIN_APPROX_SIMPLE: 中間点は保持しない
 
-    contours, hierarchy = cv2.findContours(bw, cv2.RETER_LIST, cv2.CHAIN_APPROX_NONE)
+    image, contours, hierarchy = cv2.findContours(bw, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     #矩形抽出された数(デフォルトで0を指定)
     detect_count = 0
@@ -32,14 +40,16 @@ def detect_contour(path):
             x, y, w, h = cv2.boundingRect(rect)
             cv2.rectangle(src, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-            cv2.imwrite('')
+            save_path = save_directory_name+"/"+str(detect_count)+".jpg"
+
+            print(save_path)
+            cv2.imwrite(save_path, src[y:y+h, x:x+w])
 
             detect_count = detect_count + 1
-
     cv2.imshow('output', src)
     cv2.waitKey(0)
 
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    detect_contour("C:\Users\kiyo\PycharmProjects\shogi_camera\images\shogi_ban\shogi.png")
+    detect_contour("./images/shogi_ban/shogi.png")
