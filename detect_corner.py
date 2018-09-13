@@ -3,53 +3,65 @@ import numpy as np
 import os
 import datetime
 
-def detect_contour(path):
-
-    made_time = datetime.datetime.today().strftime("%Y-%m-%d-%H-%M-%S")#フォーマットの指定
-
-    save_directory_name = "./images/result"+"/" + str(made_time)
-    os.mkdir(save_directory_name)
 
 
-    src = cv2.imread(path, cv2.IMREAD_COLOR)
 
-    gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+def hough_lines(path):
+    img = cv2.imread(path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, th2 = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
+    edges = cv2.Canny(th2, 50, 150, apertureSize=3)
 
-    retval, bw = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
+    lines = cv2.HoughLines(edges, 1, np.pi / 180, 200)
+    for rho, theta in lines[0]:
+        a = np.cos(theta)
+        b = np.sin(theta)
+        x0 = a * rho
+        y0 = b * rho
+        x1 = int(x0 + 1000 * (-b))
+        y1 = int(y0 + 1000 * (a))
+        x2 = int(x0 - 1000 * (-b))
+        y2 = int(y0 - 1000 * (a))
 
-    #輪郭を抽出
-    # contours : [領域 ]{point No][0][x=0, y=1]
-    #cv2.CHAIN_APPROX_NONE:中間点も保持する
-    #cv2.CHAIN_APPROX_SIMPLE: 中間点は保持しない
+        cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
-    image, contours, hierarchy = cv2.findContours(bw, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    cv2.imwrite('houghlines3.jpg', img)
 
-    #矩形抽出された数(デフォルトで0を指定)
-    detect_count = 0
+def edge_detecter(path):
+    import cv2
 
-    #各領域に対する処理
-    for i in range(0, len(contours)):
+    # 定数定義
+    ORG_WINDOW_NAME = "org"
+    GRAY_WINDOW_NAME = "gray"
+    CANNY_WINDOW_NAME = "canny"
 
-        area = cv2.contourArea(contours[i])
+    ORG_FILE_NAME = "org.jpg"
+    GRAY_FILE_NAME = "gray.png"
+    CANNY_FILE_NAME = "canny.png"
 
-        if area< 1e2 or 1e5 < area:
-            continue
+    # 元の画像を読み込む
+    org_img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+    # グレースケールに変換
+    gray_img = cv2.imread(ORG_FILE_NAME, cv2.IMREAD_GRAYSCALE)
+    # エッジ抽出
+    canny_img = cv2.Canny(gray_img, 50, 110)
 
-        if len(contours[i]) > 0:
-            rect = contours[i]
-            x, y, w, h = cv2.boundingRect(rect)
-            cv2.rectangle(src, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    # ウィンドウに表示
+    cv2.namedWindow(ORG_WINDOW_NAME)
+    cv2.namedWindow(GRAY_WINDOW_NAME)
+    cv2.namedWindow(CANNY_WINDOW_NAME)
 
-            save_path = save_directory_name+"/"+str(detect_count)+".jpg"
+    cv2.imshow(ORG_WINDOW_NAME, org_img)
+    cv2.imshow(GRAY_WINDOW_NAME, gray_img)
+    cv2.imshow(CANNY_WINDOW_NAME, canny_img)
 
-            print(save_path)
-            cv2.imwrite(save_path, src[y:y+h, x:x+w])
+    # ファイルに保存
+    cv2.imwrite(GRAY_FILE_NAME, gray_img)
+    cv2.imwrite(CANNY_FILE_NAME, canny_img)
 
-            detect_count = detect_count + 1
-    cv2.imshow('output', src)
+    # 終了処理
     cv2.waitKey(0)
-
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    detect_contour("./images/shogi_ban/shogi.png")
+    hough_lines("images/result/2018-09-13-16-17-09/0.jpg")
