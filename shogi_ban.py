@@ -43,7 +43,11 @@ def detect_shogi_ban(path):#写真の中から将棋盤を見つける
                 max_area_counter = i
 
     #最大面積の輪郭（将棋盤）を代入
+
+
     shogi_ban = contours[max_area_counter]
+    contour_approximater(shogi_ban, 1)
+
     x, y, w, h = cv2.boundingRect(shogi_ban)
     cv2.rectangle(src, (x, y), (x + w, y + h), (0, 255, 0), 2)
     save_path = save_directory_name + "/" + str(detect_count) + ".jpg"
@@ -52,6 +56,18 @@ def detect_shogi_ban(path):#写真の中から将棋盤を見つける
     cv2.waitKey(0)
 
     cv2.destroyAllWindows()
+
+
+def contour_approximater(cnt, i):
+    approx_contours = []
+    #輪郭の周囲の長さを計算
+    arclen = cv2.arcLength(cnt, True)
+    approx_cnt = cv2.approxPolyDP(cnt, epsilon = 0.005*arclen, closed=True)
+    approx_contours.append(approx_cnt)
+    #点の数の推移を求める
+    print('contour {}:{} -> {}'.format(i, len(cnt), len(approx_cnt)))
+
+
 
 if __name__ == "__main__":
     detect_shogi_ban("./images/shogi_ban/shogi.png")
