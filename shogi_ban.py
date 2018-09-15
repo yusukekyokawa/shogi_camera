@@ -38,10 +38,11 @@ def detect_shogi_ban(path):#写真の中から将棋盤を見つける
         if area < 1e2 or 1e5 < area:
             continue
         if len(contours[i]) > 0:
-            if max_area < area:
+            if max_area < area:#最大面積よりも大きい面積があるとき
                 max_area = area
                 max_area_counter = i
 
+    #最大面積の輪郭（将棋盤）を代入
     shogi_ban = contours[max_area_counter]
     x, y, w, h = cv2.boundingRect(shogi_ban)
     cv2.rectangle(src, (x, y), (x + w, y + h), (0, 255, 0), 2)
