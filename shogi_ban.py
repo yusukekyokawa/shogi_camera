@@ -15,7 +15,9 @@ def detect_shogi_ban(path):#写真の中から将棋盤を見つける
 
     gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
+    #適応的2値化
     ret, th2 = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
+
 
     #輪郭を抽出
     # contours : [領域 ]{point No][0][x=0, y=1]
@@ -66,6 +68,17 @@ def contour_approximater(cnt, i):
     approx_contours.append(approx_cnt)
     #点の数の推移を求める
     print('contour {}:{} -> {}'.format(i, len(cnt), len(approx_cnt)))
+
+#TODO:凸包近似から四隅を得る
+#将棋盤の四隅を特定する
+def detect_corner(img):
+    blank = np.copy(img)
+    convexes = []
+    for cnt in contours(img, False):
+        convex = cv2.convexHull(cnt)
+        cv2.drawContours(blank, [convex], -1, (0, 255, 0), 2)
+        convexes.append(convex)
+    return convexes
 
 
 
