@@ -23,6 +23,8 @@ def detect_shogi_ban(path):  # 写真の中から将棋盤を見つける
 
     #輪郭の近似
     approx_shogi_ban = contour_approximater(shogi_ban, 1)
+    #TODO:凸包を実装
+    #TODO:線形成分抽出
 
     h, w, x, y = draw_ban_contours(approx_shogi_ban, src)
 
