@@ -3,28 +3,29 @@ import numpy as np
 import datetime
 import os
 
-PATH =  "./images/result/"
+PATH = "./images/result/"
+
 
 def detect_shogi_ban(path):  # 写真の中から将棋盤を見つける
 
-    #保存するディレクトリの作成
+    # 保存するディレクトリの作成
     save_directory_name = create_save_directory()
 
-    #画像の2値化
+    # 画像の2値化
     src, th2 = image_to_binary(path)
 
-    #輪郭抽出
+    # 輪郭抽出
     image, contours, hierarchy = cv2.findContours(th2, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
-    #輪郭の中で最大面積の物を返す
+    # 輪郭の中で最大面積の物を返す
     max_area_counter = get_max_area_counter(contours)
 
     shogi_ban = contours[max_area_counter]
 
-    #輪郭の近似
+    # 輪郭の近似
     approx_shogi_ban = contour_approximater(shogi_ban, 1)
-    #TODO:凸包を実装
-    #TODO:線形成分抽出
+    # TODO:凸包を実装
+    # TODO:線形成分抽出
 
     h, w, x, y = draw_ban_contours(approx_shogi_ban, src)
 
@@ -38,7 +39,7 @@ def detect_shogi_ban(path):  # 写真の中から将棋盤を見つける
 
 
 def create_save_directory():
-    #ファイル名を日付にする
+    # ファイル名を日付にする
     made_time = datetime.datetime.today().strftime("%Y-%m-%d-%H-%M-%S")#フォーマットの指定
     save_directory_name =os.path.join(PATH, str(made_time))
     os.makedirs(save_directory_name)
@@ -75,20 +76,16 @@ def draw_ban_contours(shogi_ban, src):
     cv2.rectangle(src, (x, y), (x + w, y + h), (0, 255, 0), 2)
     return h, w, x, y
 
+
 def contour_approximater(cnt, i):
     approx_contours = []
-    #輪郭の周囲の長さを計算
+    # 輪郭の周囲の長さを計算
     arclen = cv2.arcLength(cnt, True)
     epsilon = 0.01*arclen
     approx_cnt = cv2.approxPolyDP(cnt, epsilon, closed=True)
-    #点の数の推移を求める
+    # 点の数の推移を求める
     # print('contour {}:{} -> {}'.format(i, len(cnt), len(approx_cnt)))
     return approx_cnt
-
-
-
-
-
 
 
 if __name__ == "__main__":
