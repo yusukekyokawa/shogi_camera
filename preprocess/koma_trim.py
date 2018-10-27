@@ -43,7 +43,7 @@ def mask_extra(src, contours):
 
     # マスク作成
     plain_img = np.zeros((src.shape[0], src.shape[1], 1), dtype=np.uint8)
-    mask_img = cv2.drawContours(plain_img, [contours[-2]], -1, 255, -1)
+    mask_img = cv2.drawContours(plain_img, contours, -1, 255, -1)
 
     masked = cv2.bitwise_and(src, src, mask=mask_img)
     return masked
@@ -68,19 +68,14 @@ def mask_background(src_path, save_path):
 if __name__ == '__main__':
     koma_trimmed_imgs = "/home/kiyo/Pictures/koma_trimmed_imgs"
     img_path_list = make_img_list(koma_imgs_dir)
-    print(img_path_list[1])
     for path in tqdm(img_path_list):
         # ファイル名取得
         filename = os.path.basename(path)
-        print(filename)
         # 駒フォルダ名前取得
         subdirname = os.path.basename(os.path.dirname(path))
-        print(subdirname)
         new_save_dir = os.path.join(koma_trimmed_imgs, subdirname)
-        print(new_save_dir)
 
         os.makedirs(new_save_dir, exist_ok=True)
         save_path = os.path.join(new_save_dir, filename)
-        print(save_path)
         mask_background(src_path=path, save_path=save_path)
 
