@@ -5,7 +5,7 @@ import re
 import hashlib
 import json
 
-import bing_util
+from shogi_scraping import bing_util
 
 
 def get_target(line):
@@ -42,7 +42,7 @@ def save_image_file(img_save_dir, content):
 if __name__ == '__main__':
 
     filepath = sys.argv[1]
-    save_dir_path = './save/dir/path'
+    save_dir_path = './koma/koma_imgs'
     bing_util.make_dir(save_dir_path)
 
     file = open(filepath)

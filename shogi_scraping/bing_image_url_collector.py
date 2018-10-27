@@ -6,7 +6,7 @@ import urllib
 import re
 import datetime
 
-import bing_util
+from shogi_scraping import bing_util
 
 
 def get_headers(api_key):
@@ -60,14 +60,14 @@ if __name__ == '__main__':
     config.read('authentication.ini')
     bing_api_key = config['auth']['bing_api_key']
 
-    save_dir_path = './save/dir/path'
+    save_dir_path = './koma/koma_url'
     bing_util.make_dir(save_dir_path)
     url_dir_path = os.path.join(save_dir_path, 'url')
     bing_util.make_dir(url_dir_path)
 
     num_imgs_required = 100 # Number of images you want.
     num_imgs_per_transaction =30 # default 30, Max 150 images
-    search_term = ""
+    search_term = "将棋　駒"
 
     search_url = "https://api.cognitive.microsoft.com/bing/v7.0/images/search"
 
