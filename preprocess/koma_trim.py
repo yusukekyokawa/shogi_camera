@@ -14,8 +14,6 @@ def make_img_list(img_dir):
             if file.endswith(ext):
                 img_path = os.path.join(curDir, file)
                 img_path_list.append(img_path)
-
-    print("done")
     return img_path_list
 
 
@@ -36,6 +34,8 @@ def get_koma_contours(src):
     _, contours, _ = cv2.findContours(thresh_img - 255, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     return contours
+
+
 
 
 def mask_extra(src, contours):
@@ -66,16 +66,33 @@ def mask_background(src_path, save_path):
 
 
 if __name__ == '__main__':
-    koma_trimmed_imgs = "/home/kiyo/Pictures/koma_trimmed_imgs"
-    img_path_list = make_img_list(koma_imgs_dir)
-    for path in tqdm(img_path_list):
-        # ファイル名取得
-        filename = os.path.basename(path)
-        # 駒フォルダ名前取得
-        subdirname = os.path.basename(os.path.dirname(path))
-        new_save_dir = os.path.join(koma_trimmed_imgs, subdirname)
-
-        os.makedirs(new_save_dir, exist_ok=True)
-        save_path = os.path.join(new_save_dir, filename)
-        mask_background(src_path=path, save_path=save_path)
-
+    # koma_trimmed_imgs = "/home/kiyo/Pictures/koma_trimmed_imgs"
+    # img_path_list = make_img_list(koma_imgs_dir)
+    # for path in tqdm(img_path_list):
+    #     # ファイル名取得
+    #     filename = os.path.basename(path)
+    #     # 駒フォルダ名前取得
+    #     subdirname = os.path.basename(os.path.dirname(path))
+    #     new_save_dir = os.path.join(koma_trimmed_imgs, subdirname)
+    #
+    #     os.makedirs(new_save_dir, exist_ok=True)
+    #     save_path = os.path.join(new_save_dir, filename)
+    #     mask_background(src_path=path, save_path=save_path)
+    h_img_dir = "C:/Users/kiyo/PycharmProjects/shogi_camera/h_img"
+    s_img_dir = "C:/Users/kiyo/PycharmProjects/shogi_camera/s_img"
+    v_img_dir = "C:/Users/kiyo/PycharmProjects/shogi_camera/v_img"
+    hsv_img_dir = "C:/Users/kiyo/PycharmProjects/shogi_camera/hsv_img"
+    binary_img_dir = "C:/Users/kiyo/PycharmProjects/shogi_camera/binary_img"
+    img_path_list = make_img_list("C:/Users/kiyo/PycharmProjects/shogi_camera/koma_imgs")
+    for i, path in enumerate(img_path_list):
+        print(path)
+        img = cv2.imread(path)
+        hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV_FULL)
+        h_img, s_img, v_img = cv2.split(hsv_img)
+        _, binary_img = cv2.threshold(s_img, 0, 255, cv2.THRESH_OTSU)
+        filename = str(i) + ".jpg"
+        cv2.imwrite(os.path.join(h_img_dir, filename), h_img)
+        cv2.imwrite(os.path.join(s_img_dir, filename), s_img)
+        cv2.imwrite(os.path.join(v_img_dir, filename), v_img)
+        cv2.imwrite(os.path.join(hsv_img_dir, filename), hsv_img)
+        cv2.imwrite(os.path.join(binary_img_dir, filename), binary_img)
