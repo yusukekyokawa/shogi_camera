@@ -3,20 +3,7 @@ from img_dir_path import koma_imgs_dir
 import cv2
 from tqdm import tqdm
 import numpy as np
-
-
-def make_img_list(img_dir):
-    """指定フォルダ内に存在するすべての画像pathを取ってくる"""
-    ext = ".png"
-    img_path_list = []
-    for curDir, dirs, files in os.walk(img_dir):
-        for file in files:
-            if file.endswith(ext):
-                img_path = os.path.join(curDir, file)
-                img_path_list.append(img_path)
-
-    print("done")
-    return img_path_list
+from preprocess.make_img_list import make_img_list
 
 
 def get_koma_contours(src):
