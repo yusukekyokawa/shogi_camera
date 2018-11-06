@@ -11,6 +11,5 @@ def make_img_list(img_dir):
                 img_path = os.path.join(curDir, file)
                 img_path_list.append(img_path)
 
-    print("done")
     return img_path_list
 

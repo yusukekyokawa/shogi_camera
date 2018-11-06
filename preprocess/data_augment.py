@@ -4,11 +4,13 @@ from keras.preprocessing import image
 from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 from preprocess.make_img_list import make_img_list
 import numpy as np
-from img_dir_path import koma_imgs_dir
+from img_dir_path import KOMA_IMGS, AUGMENTED_KOMAS_DIR
+from PIL import Image
+
 
 def create_save_dir(img_path, save_dir):
     """元のフォルダ構成を元に保存するpathを作る
-    読み込み画像ディレクトリのpath >>> koma_imgs/0_gyoku/gyoku.png
+    読み込み画像ディレクトリのpath >>> KOMA_IMGS/0_gyoku/gyoku.png
     保存する画像ディレクトリのpath >>> koma_save_imgs/0_gryoku/gyoku.png
     """
     # ファイル名の取得 gyoku.png
@@ -29,28 +31,25 @@ def generate_images(save_dir, class_name, generator, img_path):
 
     x = np.expand_dims(x, axis=0)
 
-    g = generator.flow(x, save_to_dir=save_dir, save_prefix=class_name, save_format='jpg')
+    g = generator.flow(x, save_to_dir=save_dir, save_prefix=class_name, save_format='png')
     # 20個の画像を生成します
     for _ in range(20):
-        g.next()
+        next(g)
 
 
 if __name__ == "__main__":
-    save_root = "augmented_komas"
     datagen = ImageDataGenerator(
-        height_shift_range=0.3,
-        width_shift_range=0.3,
-        shear_range=5,
-        zoom_range=[0.5, 1.2],
         channel_shift_range=5.,
         brightness_range=[0.3, 1.0],
-        featurewise_center=True
+        featurewise_center=True,
+        samplewise_center=True
     )
-    for koma_dir in os.listdir(koma_imgs_dir):
+    for koma_dir in os.listdir(KOMA_IMGS):
         print("start augmentation with {}".format(koma_dir))
-        for path in make_img_list(koma_dir):
+        koma_dir_path = os.path.join(KOMA_IMGS, koma_dir)
+        for path in make_img_list(koma_dir_path):
             print(path)
-            save_dir = create_save_dir(img_path=path, save_dir=save_root)
+            save_dir = create_save_dir(img_path=path, save_dir=AUGMENTED_KOMAS_DIR)
             generate_images(save_dir=save_dir, class_name=koma_dir, generator=datagen, img_path=path)
 
 
