@@ -1,9 +1,6 @@
 import os
 
 
-
-
-
 def load_weight(loaded_model, weights_dir):
     weight_lists = os.listdir(weights_dir)
     print("{} weights found".format(len(weights_dir)))
